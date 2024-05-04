@@ -1,21 +1,83 @@
-import { Badge, Image, Space, Typography } from "antd";
 import { BellFilled, MailOutlined } from "@ant-design/icons";
+import { Badge, Drawer, Image, List, Space, Typography } from "antd";
+import { useEffect, useState } from "react";
+import { getComments, getOrders } from "../../API";
+
 function AppHeader() {
+  const [comments, setComments] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [commentsOpen, setCommentsOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+
+  useEffect(() => {
+    getComments().then((res) => {
+      setComments(res.comments);
+    });
+    getOrders().then((res) => {
+      setOrders(res.products);
+    });
+  }, []);
+
   return (
     <div className="AppHeader">
       <Image
         width={40}
-        src="https://www.google.com/search?sca_esv=b511c58466c4623d&sxsrf=ACQVn0_lAN-Vv1y5HNNPUSACoX3Y7F0Ipg:1714586427643&q=mcgregor&tbm=isch&source=lnms&prmd=invsmbtz&sa=X&ved=2ahUKEwiXhNOXhO2FAxUTRmwGHbq1Bo0Q0pQJegQIDRAB&biw=1920&bih=967&dpr=1#imgrc=MJc9GYiPO3-_fM"
+        src="https://m.facebook.com/thenotoriousmma/photos/"
       ></Image>
-      <Typography.Title>FoodEz Dashboard</Typography.Title>
+      <Typography.Title>Foodez Dashbaord</Typography.Title>
       <Space>
-        <Badge count={10} dot>
-          <MailOutlined style={{ fontSize: 30 }} />
+        <Badge count={comments.length} dot>
+          <MailOutlined
+            style={{ fontSize: 24 }}
+            onClick={() => {
+              setCommentsOpen(true);
+            }}
+          />
         </Badge>
-        <Badge count={10}>
-          <BellFilled style={{ fontSize: 30 }} />
+        <Badge count={orders.length}>
+          <BellFilled
+            style={{ fontSize: 24 }}
+            onClick={() => {
+              setNotificationsOpen(true);
+            }}
+          />
         </Badge>
       </Space>
+      <Drawer
+        title="Comments"
+        open={commentsOpen}
+        onClose={() => {
+          setCommentsOpen(false);
+        }}
+        maskClosable
+      >
+        <List
+          dataSource={comments}
+          renderItem={(item) => {
+            return <List.Item>{item.body}</List.Item>;
+          }}
+        ></List>
+      </Drawer>
+      <Drawer
+        title="Notifications"
+        open={notificationsOpen}
+        onClose={() => {
+          setNotificationsOpen(false);
+        }}
+        maskClosable
+      >
+        <List
+          dataSource={orders}
+          renderItem={(item) => {
+            return (
+              <List.Item>
+                <Typography.Text strong>{item.title}</Typography.Text> has been
+                ordered!
+              </List.Item>
+            );
+          }}
+        ></List>
+      </Drawer>
     </div>
   );
 }
