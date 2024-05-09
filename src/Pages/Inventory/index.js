@@ -47,11 +47,6 @@ function Inventory() {
             title: "Stock",
             dataIndex: "stock",
           },
-
-          {
-            title: "Brand",
-            dataIndex: "brand",
-          },
           {
             title: "Category",
             dataIndex: "category",
